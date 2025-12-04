@@ -10,11 +10,6 @@ import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
-/**
- * @author Carton
- * @date 2025/12/3 16:09
- * @description TODO:
- */
 @RestController()
 @CrossOrigin("*")
 @RequestMapping("/api/v1/ollama/")
