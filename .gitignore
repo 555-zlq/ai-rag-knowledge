@@ -11,6 +11,7 @@ target/
 *.iws
 *.iml
 *.ipr
+*.log
 
 ### Eclipse ###
 .apt_generated
@@ -37,3 +38,4 @@ build/
 ### Mac OS ###
 .DS_Store
 /.idea/
+/ai-rag-knowledge-app/data/log/log_error.log
