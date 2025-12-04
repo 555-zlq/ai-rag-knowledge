@@ -1,93 +1,93 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeepSeek AI Chat</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            primary: '#4F46E5', // Indigo-600
-            primaryHover: '#4338CA', // Indigo-700
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek AI Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4F46E5', // Indigo-600
+                        primaryHover: '#4338CA', // Indigo-700
+                    }
+                }
+            }
         }
-      }
-    }
-  </script>
-  <style>
-    /* 自定义滚动条 */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background-color: #CBD5E1;
-      border-radius: 20px;
-    }
-    /* 消息出现动画 */
-    .message-enter {
-      animation: slideIn 0.3s ease-out forwards;
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    /* 光标闪烁 */
-    .cursor-blink {
-      animation: blink 1s step-end infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-  </style>
+    </script>
+    <style>
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #CBD5E1;
+            border-radius: 20px;
+        }
+        /* 消息出现动画 */
+        .message-enter {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 光标闪烁 */
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
 <body class="bg-slate-50 h-screen font-sans text-slate-800 overflow-hidden flex flex-col">
 
 <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 p-4 sticky top-0 z-10 shadow-sm">
-  <div class="container mx-auto max-w-4xl flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      </div>
-      <div>
-        <h1 class="font-semibold text-slate-800">DeepSeek AI</h1>
-        <div class="flex items-center space-x-1">
-          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-          <span class="text-xs text-slate-500">Online</span>
+    <div class="container mx-auto max-w-4xl flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-semibold text-slate-800">DeepSeek AI</h1>
+                <div class="flex items-center space-x-1">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-xs text-slate-500">Online</span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </header>
 
 <main class="flex-1 overflow-hidden relative w-full max-w-4xl mx-auto flex flex-col">
 
-  <div id="messageContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth">
-    <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-100 transition-opacity duration-500">
-      <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-100 mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      </div>
-      <h2 class="text-2xl font-semibold text-slate-700">有什么可以帮你的吗？</h2>
-      <p class="text-slate-400 max-w-md">我是由 DeepSeek 驱动的 AI 助手。你可以问我代码问题、寻求写作灵感或进行日常对话。</p>
+    <div id="messageContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 scroll-smooth">
+        <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-100 transition-opacity duration-500">
+            <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-100 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-semibold text-slate-700">有什么可以帮你的吗？</h2>
+            <p class="text-slate-400 max-w-md">我是由 DeepSeek 驱动的 AI 助手。你可以问我代码问题、寻求写作灵感或进行日常对话。</p>
+        </div>
     </div>
-  </div>
 
-  <div class="p-4 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent">
-    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-2 flex items-end space-x-2 transition-shadow focus-within:shadow-xl focus-within:ring-1 focus-within:ring-indigo-100">
+    <div class="p-4 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent">
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-2 flex items-end space-x-2 transition-shadow focus-within:shadow-xl focus-within:ring-1 focus-within:ring-indigo-100">
                 <textarea
                         id="messageInput"
                         placeholder="输入消息..."
@@ -96,167 +96,167 @@
                         onkeypress="handleKeyPress(event)"
                         oninput="autoResize(this)"
                 ></textarea>
-      <button
-              onclick="sendMessage()"
-              class="mb-1 p-3 bg-primary text-white rounded-xl hover:bg-primaryHover transition-all active:scale-95 shadow-md flex-shrink-0"
-              title="发送"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-        </svg>
-      </button>
+            <button
+                    onclick="sendMessage()"
+                    class="mb-1 p-3 bg-primary text-white rounded-xl hover:bg-primaryHover transition-all active:scale-95 shadow-md flex-shrink-0"
+                    title="发送"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+            </button>
+        </div>
+        <p class="text-center text-xs text-slate-400 mt-2">内容由 AI 生成，请注意甄别。</p>
     </div>
-    <p class="text-center text-xs text-slate-400 mt-2">内容由 AI 生成，请注意甄别。</p>
-  </div>
 </main>
 
 <script>
-  // 输入框高度自动调整
-  function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-  }
+    // 输入框高度自动调整
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
 
-  // SVG 图标定义
-  const USER_ICON = `
+    // SVG 图标定义
+    const USER_ICON = `
             <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 ml-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                 </svg>
             </div>`;
 
-  const AI_ICON = `
+    const AI_ICON = `
             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0 mr-2 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
             </div>`;
 
-  // 添加消息到容器
-  function addMessage(content, isUser = false) {
-    const container = document.getElementById('messageContainer');
-    const emptyState = document.getElementById('emptyState');
+    // 添加消息到容器
+    function addMessage(content, isUser = false) {
+        const container = document.getElementById('messageContainer');
+        const emptyState = document.getElementById('emptyState');
 
-    // 隐藏欢迎界面
-    if (emptyState) emptyState.style.display = 'none';
+        // 隐藏欢迎界面
+        if (emptyState) emptyState.style.display = 'none';
 
-    const messageWrapper = document.createElement('div');
-    messageWrapper.className = `flex w-full message-enter ${isUser ? 'justify-end' : 'justify-start'}`;
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = `flex w-full message-enter ${isUser ? 'justify-end' : 'justify-start'}`;
 
-    const bubbleClass = isUser
+        const bubbleClass = isUser
             ? 'bg-primary text-white rounded-2xl rounded-tr-sm shadow-md'
             : 'bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-sm shadow-sm';
 
-    // 构建 HTML 结构
-    let html = '';
-    if (isUser) {
-      html = `
+        // 构建 HTML 结构
+        let html = '';
+        if (isUser) {
+            html = `
                     <div class="flex items-start max-w-[85%] sm:max-w-[75%]">
                         <div class="${bubbleClass} p-4 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">${content}</div>
                         ${USER_ICON}
                     </div>
                 `;
-    } else {
-      html = `
+        } else {
+            html = `
                     <div class="flex items-start max-w-[85%] sm:max-w-[75%]">
                         ${AI_ICON}
                         <div class="${bubbleClass} p-4 text-sm sm:text-base leading-relaxed whitespace-pre-wrap message-content">${content}</div>
                     </div>
                 `;
+        }
+
+        messageWrapper.innerHTML = html;
+        container.appendChild(messageWrapper);
+        scrollToBottom();
+        return messageWrapper; // 返回元素以便后续更新
     }
 
-    messageWrapper.innerHTML = html;
-    container.appendChild(messageWrapper);
-    scrollToBottom();
-    return messageWrapper; // 返回元素以便后续更新
-  }
+    function scrollToBottom() {
+        const container = document.getElementById('messageContainer');
+        container.scrollTop = container.scrollHeight;
+    }
 
-  function scrollToBottom() {
-    const container = document.getElementById('messageContainer');
-    container.scrollTop = container.scrollHeight;
-  }
+    // 发送消息
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
 
-  // 发送消息
-  async function sendMessage() {
-    const input = document.getElementById('messageInput');
-    const message = input.value.trim();
+        if (!message) return;
 
-    if (!message) return;
+        // 重置输入框
+        input.value = '';
+        input.style.height = 'auto'; // 重置高度
 
-    // 重置输入框
-    input.value = '';
-    input.style.height = 'auto'; // 重置高度
+        // 添加用户消息
+        addMessage(message, true);
 
-    // 添加用户消息
-    addMessage(message, true);
+        // 添加初始AI消息占位
+        addMessage('<span class="inline-block w-2 h-4 bg-slate-400 cursor-blink align-middle"></span>');
 
-    // 添加初始AI消息占位
-    addMessage('<span class="inline-block w-2 h-4 bg-slate-400 cursor-blink align-middle"></span>');
+        // 构建API URL
+        const apiUrl = `http://localhost:8090/api/v1/ollama/generate_stream?model=deepseek-r1:1.5b&message=${encodeURIComponent(message)}`;
 
-    // 构建API URL
-    const apiUrl = `http://localhost:8090/api/v1/ollama/generate_stream?model=deepseek-r1:1.5b&message=${encodeURIComponent(message)}`;
+        // 使用EventSource接收流式响应
+        const eventSource = new EventSource(apiUrl);
+        let buffer = '';
 
-    // 使用EventSource接收流式响应
-    const eventSource = new EventSource(apiUrl);
-    let buffer = '';
-
-    // 获取最后一条消息的内容容器
-    const container = document.getElementById('messageContainer');
-    const lastMessageContent = container.lastElementChild.querySelector('.message-content');
-
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        const content = data.result?.output?.content || '';
-        const finishReason = data.result?.metadata?.finishReason;
-
-        if (content) {
-          buffer += content;
-          // 更新内容，保留光标
-          lastMessageContent.innerHTML = buffer + '<span class="inline-block w-2 h-4 bg-indigo-500 ml-1 cursor-blink align-middle"></span>';
-          scrollToBottom();
-        }
-
-        if (finishReason === 'STOP') {
-          eventSource.close();
-          lastMessageContent.innerHTML = buffer; // 移除光标
-        }
-      } catch (error) {
-        console.error('解析错误:', error);
-        lastMessageContent.innerHTML += `<br><span class="text-red-500 text-xs">Error parsing response</span>`;
-      }
-    };
-
-    eventSource.onerror = (error) => {
-      console.error('EventSource错误:', error);
-      eventSource.close();
-      // 如果是连接错误，提示用户
-      if (buffer === '') {
-        updateLastMessage('⚠️ 连接服务失败，请检查本地服务是否启动 (localhost:8090)');
-      } else {
-        // 如果已经有内容但中断了，移除光标即可
+        // 获取最后一条消息的内容容器
+        const container = document.getElementById('messageContainer');
         const lastMessageContent = container.lastElementChild.querySelector('.message-content');
-        if(lastMessageContent) lastMessageContent.innerHTML = buffer;
-      }
-    };
-  }
 
-  // 辅助更新函数（用于错误处理）
-  function updateLastMessage(content) {
-    const container = document.getElementById('messageContainer');
-    const lastContent = container.lastElementChild.querySelector('.message-content');
-    if (lastContent) {
-      lastContent.innerHTML = content;
-    }
-  }
+        eventSource.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const content = data.result?.output?.content || '';
+                const finishReason = data.result?.metadata?.finishReason;
 
-  // 回车发送 (支持 Shift+Enter 换行)
-  function handleKeyPress(event) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      sendMessage();
+                if (content) {
+                    buffer += content;
+                    // 更新内容，保留光标
+                    lastMessageContent.innerHTML = buffer + '<span class="inline-block w-2 h-4 bg-indigo-500 ml-1 cursor-blink align-middle"></span>';
+                    scrollToBottom();
+                }
+
+                if (finishReason === 'STOP') {
+                    eventSource.close();
+                    lastMessageContent.innerHTML = buffer; // 移除光标
+                }
+            } catch (error) {
+                console.error('解析错误:', error);
+                lastMessageContent.innerHTML += `<br><span class="text-red-500 text-xs">Error parsing response</span>`;
+            }
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource错误:', error);
+            eventSource.close();
+            // 如果是连接错误，提示用户
+            if (buffer === '') {
+                updateLastMessage('⚠️ 连接服务失败，请检查本地服务是否启动 (localhost:8090)');
+            } else {
+                // 如果已经有内容但中断了，移除光标即可
+                const lastMessageContent = container.lastElementChild.querySelector('.message-content');
+                if(lastMessageContent) lastMessageContent.innerHTML = buffer;
+            }
+        };
     }
-  }
+
+    // 辅助更新函数（用于错误处理）
+    function updateLastMessage(content) {
+        const container = document.getElementById('messageContainer');
+        const lastContent = container.lastElementChild.querySelector('.message-content');
+        if (lastContent) {
+            lastContent.innerHTML = content;
+        }
+    }
+
+    // 回车发送 (支持 Shift+Enter 换行)
+    function handleKeyPress(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
 </script>
 </body>
 </html>

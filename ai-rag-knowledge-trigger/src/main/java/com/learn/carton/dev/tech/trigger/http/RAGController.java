@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RestController()
 @CrossOrigin("*")
-@RequestMapping("/api/v1/rag/")
+@RequestMapping("/api/v1/ollama/")
 public class RAGController implements IRagService {
 
     @Resource
