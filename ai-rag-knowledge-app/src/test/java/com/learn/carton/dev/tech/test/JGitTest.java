@@ -1,24 +1,22 @@
-package com.learn.carton.dev.tech.trigger.http;
+package com.learn.carton.dev.tech.test;
 
 
-import com.learn.carton.dev.tech.api.IRagService;
-import com.learn.carton.dev.tech.api.response.Response;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.redisson.api.RList;
-import org.redisson.api.RedissonClient;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.ollama.OllamaChatClient;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.PgVectorStore;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.PathResource;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +26,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * @author Carton
+ * @date 2025/12/8 11:08
+ * @description TODO: JGit单元测试
+ */
+
 @Slf4j
-@RestController()
-@CrossOrigin("*")
-@RequestMapping("/api/v1/ollama/")
-public class RAGController implements IRagService {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class JGitTest {
 
     @Resource
     private OllamaChatClient ollamaChatClient;
@@ -42,60 +45,37 @@ public class RAGController implements IRagService {
     private SimpleVectorStore simpleVectorStore;
     @Resource
     private PgVectorStore pgVectorStore;
-    @Resource
-    private RedissonClient redissonClient;
 
-    @RequestMapping(value = "query_rag_tag_list", method = RequestMethod.GET)
-    @Override
-    public Response<List<String>> queryRagTagList() {
-        RList<String> elements = redissonClient.getList("ragTag");
-        return Response.<List<String>>builder()
-                .code("0000")
-                .info("调用成功")
-                .data(elements)
-                .build();
-    }
+    @Test
+    public void test() throws Exception {
 
-    @RequestMapping(value = "file/upload", method = RequestMethod.POST, headers = "content-type=multipart/form-data")
-    @Override
-    public Response<String> uploadFile(@RequestParam String ragTag, @RequestParam("file") List<MultipartFile> files) {
-        log.info("上传知识库开始 {}", ragTag);
-        for (MultipartFile file : files) {
-            TikaDocumentReader reader = new TikaDocumentReader(file.getResource());
+        // 让 Java 走你的代理
+        System.setProperty("https.proxyHost", "127.0.0.1");
+        System.setProperty("https.proxyPort", "7897");
+        System.setProperty("http.proxyHost", "127.0.0.1");
+        System.setProperty("http.proxyPort", "7897");
 
-            List<Document> documents = reader.get();
-            List<Document> documentSplitterList = tokenTextSplitter.apply(documents);
+        String repoUrl = "https://github.com/555-zlq/Big-Market-Front";
+        String username = "555-zlq";
+        String password = "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";
 
-            documents.forEach(document -> document.getMetadata().put("knowledge", ragTag));
-            documentSplitterList.forEach(document -> document.getMetadata().put("knowledge", ragTag));
-
-            pgVectorStore.accept(documentSplitterList);
-
-            RList<String> elements = redissonClient.getList("ragTag");
-            if (!elements.contains(ragTag)) {
-                elements.add(ragTag);
-            }
-        }
-        log.info("上传知识库完成 {}", ragTag);
-        return Response.<String>builder().code("0000").info("调用成功").build();
-    }
-
-    @RequestMapping(value = "analyze_git_repository", method = RequestMethod.POST)
-    @Override
-    public Response<String> analyzeGitRepository(@RequestParam String repoUrl, @RequestParam String userName, @RequestParam String token) throws Exception {
-        String localPath = "./git-cloned-repo";
-        String repoProjectName = extractProjectName(repoUrl);
-        log.info("克隆路径：{}", new File(localPath).getAbsolutePath());
+        String localPath = "./cloned-repo";
+        log.info("克隆路径：" + new File(localPath).getAbsolutePath());
 
         FileUtils.deleteDirectory(new File(localPath));
 
         Git git = Git.cloneRepository()
                 .setURI(repoUrl)
                 .setDirectory(new File(localPath))
-                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(userName, token))
+                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(username, password))
                 .call();
 
-        Files.walkFileTree(Paths.get(localPath), new SimpleFileVisitor<>() {
+        git.close();
+    }
+
+    @Test
+    public void test_file() throws IOException {
+        Files.walkFileTree(Paths.get("./cloned-repo"), new SimpleFileVisitor<>() {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
@@ -137,9 +117,8 @@ public class RAGController implements IRagService {
                     List<Document> documentList = tokenTextSplitter.apply(documents);
 
                     // 4. 加标签
-                    documents.forEach(doc -> doc.getMetadata().put("knowledge", repoProjectName));
                     documentList.forEach(doc ->
-                            doc.getMetadata().put("knowledge", repoProjectName)
+                            doc.getMetadata().put("knowledge", "Big-Market-Front")
                     );
 
                     // 5. 写入向量库
@@ -153,26 +132,6 @@ public class RAGController implements IRagService {
                 return FileVisitResult.CONTINUE;
             }
         });
-
-        FileUtils.deleteDirectory(new File(localPath));
-
-        RList<String> elements = redissonClient.getList("ragTag");
-        if (!elements.contains(repoProjectName)) {
-            elements.add(repoProjectName);
-        }
-
-        git.close();
-
-        log.info("遍历解析路径，上传完成:{}", repoUrl);
-
-        return Response.<String>builder().code("0000").info("调用成功").build();
-
-    }
-
-    private String extractProjectName(String repoUrl) {
-        String[] parts = repoUrl.split("/");
-        String projectNameWithGit = parts[parts.length - 1];
-        return projectNameWithGit.replace(".git", "");
     }
 
     /**
@@ -189,5 +148,7 @@ public class RAGController implements IRagService {
 
         return Arrays.stream(binaryExt).anyMatch(fileName::endsWith);
     }
+
+
 
 }
