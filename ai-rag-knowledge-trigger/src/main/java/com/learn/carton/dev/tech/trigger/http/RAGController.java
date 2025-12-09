@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController()
 @CrossOrigin("*")
-@RequestMapping("/api/v1/ollama/")
+@RequestMapping("/api/v1/rag/")
 public class RAGController implements IRagService {
 
     @Resource

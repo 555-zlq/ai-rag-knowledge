@@ -33,6 +33,15 @@ spring:
         options:
           num-batch: 512
         model: nomic-embed-text
+    openai:
+      chat:
+        options:
+          function-call: none
+      base-url: "https://api.openai-proxy.org"
+      api-key: "sk-k8yjC02DdOCJGxa5GEu6nJT45QxKTkor5KA1dSm4FkMMebbi"
+      embedding-model: text-embedding-ada-002
+    rag:
+      embed: nomic-embed-text
 
 # Redis
 redis:
